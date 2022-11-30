@@ -18,6 +18,7 @@ import tkinter as tk
 
 from competitors.HuntingInstructors import Hunter
 from competitors.AgrarianInstructors import SuperPlant
+from competitors.BrownGillingham import BugKilla
 
 from framework import BugBattle
 
