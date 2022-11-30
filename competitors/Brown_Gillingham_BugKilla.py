@@ -6,7 +6,7 @@ Created by:
     OCdt Gillingham
 """
 
-from shared import Creature, Propagator
+from shared import Creature, Propagator, Direction
 
 class BugKilla(Creature):
 
@@ -14,13 +14,27 @@ class BugKilla(Creature):
 
     def __init__(self):
         super().__init__()
-
+        BugKilla.__instance_count += 1
+        self.womb = None
 
     def do_turn(self):
-        pass
+        self.kid_ify()
 
+    @classmethod
     def destroyed(self):
-        pass
+        BugKilla.__instance_count -= 1
 
-    def instance_count(self):
-        pass
+    @classmethod
+    def instance_count(cls):
+        return BugKilla.__instance_count
+
+
+    def kid_ify(self):
+        while self.strength() >= 0.9 * Creature.MAX_STRENGTH:
+            self.womb.give_birth(self.strength()/2, Direction.random())
+
+
+class BugKillaPropagator(Propagator):
+
+    def make_child(self):
+        return BugKilla
