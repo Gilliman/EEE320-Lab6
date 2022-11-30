@@ -34,7 +34,7 @@ class Creature(ABC):
 
     If you have multiple Creature subclasses as part of your competitor strategy,
     then a few things are required to make instance counting and colour coding in
-    in the view work properly.
+    the view work properly.
 
     1. All your competitor classes MUST be subclasses of your main competitor class,
     and MUST NOT define their own __instance_count attribute, destroyed() method, or

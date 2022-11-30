@@ -14,13 +14,14 @@ class BugKilla(Creature):
 
     def __init__(self):
         super().__init__()
+        BugKilla.__instance_count += 1
 
 
     def do_turn(self):
         pass
 
     def destroyed(self):
-        pass
+        BugKilla.__instance_count -= 1
 
     def instance_count(self):
-        pass
+        return BugKilla.__instance_count
