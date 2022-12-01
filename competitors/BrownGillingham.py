@@ -6,7 +6,8 @@ Created by:
     OCdt Gillingham
 """
 
-from shared import Creature, Propagator
+from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant
+
 
 class BugKilla(Creature):
 
@@ -25,3 +26,15 @@ class BugKilla(Creature):
 
     def instance_count(self):
         return BugKilla.__instance_count
+
+    def create_organs(self):
+        pass
+
+    # copied form Hunter as I think this makes a lot of sense to do it this way but idk bro
+    def reproduce_if_able(self):
+        if self.strength() >= 0.9 * Creature.MAX_STRENGTH:
+            for d in Direction:
+                nursery = self.type_sensor.sense(d)
+                if nursery == Soil or nursery == Plant:
+                    self.womb.give_birth(self.strength()/2, d)
+                    break
