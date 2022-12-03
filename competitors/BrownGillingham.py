@@ -16,10 +16,19 @@ class BugKilla(Creature):
     def __init__(self):
         super().__init__()
         BugKilla.__instance_count += 1
+        self.cilia = None
+        self.type_sensor = None
+        self.womb = None
 
 
     def do_turn(self):
-        pass
+        if not (self.cilia and self.type_sensor and self.womb):
+            self.organify()
+        else:
+            self.reproduce_if_able()
+            did_attack = self.find_victim()
+            if not did_attack:
+                self.cilia.move_in_direction(Direction.random())
 
     @classmethod
     def destroyed(cls):
@@ -29,8 +38,13 @@ class BugKilla(Creature):
     def instance_count(cls):
         return BugKilla.__instance_count
 
-    def create_organs(self):
-        pass
+    def organify(self):
+        if not self.cilia and self.strength() > Cilia.CREATION_COST:
+            self.cilia = Cilia(self)
+        if not self.type_sensor and self.strength() > CreatureTypeSensor.CREATION_COST:
+            self.type_sensor = CreatureTypeSensor(self)
+        if not self.womb and self.strength() > Propagator.CREATION_COST:
+            self.womb = BugKillaPropagator(self)
 
     # copied form Hunter as I think this makes a lot of sense to do it this way but idk bro
     def reproduce_if_able(self):
@@ -41,11 +55,19 @@ class BugKilla(Creature):
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
-class MiniBugKilla(Hunter):
+    def find_victim(self):
+        for d in Direction:
+            victim = self.type_sensor.sense(d)
+            if victim != Soil and victim != BugKilla and victim != MiniBugKilla:
+                self.cilia.move_in_direction(d)
+                return True
+        return False
+
+class MiniBugKilla(BugKilla):
 
     def __init__(self):
         super().__init__()
-git
+
 class BugKillaPropagator(Propagator):
 
     def make_child(self):
