@@ -12,6 +12,7 @@ from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, S
 class BugKilla(Creature):
 
     __instance_count = 0
+    __less_reproduction = 350
 
     def __init__(self):
         super().__init__()
@@ -51,7 +52,10 @@ class BugKilla(Creature):
         if self.strength() >= 0.9 * Creature.MAX_STRENGTH:
             for d in Direction:
                 nursery = self.type_sensor.sense(d)
-                if nursery == Soil or nursery == Plant:
+                # if the population of our bug is greater than less_reproduction save energy IOT attack more
+                if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
+                    self.womb.give_birth(self.strength()/2, d)
+                elif nursery == Soil or nursery == Plant:
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
