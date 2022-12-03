@@ -1,3 +1,5 @@
 # ignore All _pycache_ files as they create trouble while merging
 *.pyc
 competitors/__pycache__/
+# removes open office file thing
+Documentation/.~lock.organs.ods#
