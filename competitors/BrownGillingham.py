@@ -21,10 +21,12 @@ class BugKilla(Creature):
     def do_turn(self):
         pass
 
-    def destroyed(self):
+    @classmethod
+    def destroyed(cls):
         BugKilla.__instance_count -= 1
 
-    def instance_count(self):
+    @classmethod
+    def instance_count(cls):
         return BugKilla.__instance_count
 
     def create_organs(self):
@@ -38,3 +40,13 @@ class BugKilla(Creature):
                 if nursery == Soil or nursery == Plant:
                     self.womb.give_birth(self.strength()/2, d)
                     break
+
+class MiniBugKilla(Hunter):
+
+    def __init__(self):
+        super().__init__()
+git
+class BugKillaPropagator(Propagator):
+
+    def make_child(self):
+        return MiniBugKilla()
