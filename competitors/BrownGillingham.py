@@ -127,7 +127,12 @@ class BugAttacker(BugKilla):
 class BugKillaPropagator(Propagator):
     def make_child(self):
         randomNum = random()
+        # 1/16 chance of creating a Spiker
         if randomNum <= 0.0625:
             return Spiker()
+        # 1/10 chance of creating an Attacker
+        elif randomNum <= 0.1625:
+            return BugAttacker()
+        # 67/80 chance of creating a MiniBugKila
         else:
             return MiniBugKilla()
