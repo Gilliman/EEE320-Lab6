@@ -125,20 +125,27 @@ class BugAttacker(BugKilla):
 
 
 class BugKillaPropagator(Propagator):
+    previous_bugs = [None]*500
     def make_child(self):
         instance_count = BugKilla.instance_count()
         randomNum = random()
+        attackerPercent = 0.2
+        spikerPercent = 0.0625
         if instance_count < 100:
-            return MiniBugKilla()
+            return self.append_bug(MiniBugKilla())
         elif instance_count < 200:
-            if randomNum <= 0.2:
-                return BugAttacker()
+            if randomNum <= attackerPercent:
+                return self.append_bug(BugAttacker())
             else:
-                return MiniBugKilla()
+                return self.append_bug(MiniBugKilla())
         else:
-            if randomNum <= 0.2:
-                return BugAttacker()
-            elif randomNum <= 0.2625:
-                return Spiker()
+            if randomNum <= attackerPercent:
+                return self.append_bug(BugAttacker())
+            elif randomNum <= spikerPercent + attackerPercent:
+                return self.append_bug(Spiker())
             else:
-                return MiniBugKilla()
+                return self.append_bug(MiniBugKilla())
+
+    def append_bug(self, bug):
+        BugKillaPropagator.previous_bugs.append(bug)
+        return bug
