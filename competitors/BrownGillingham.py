@@ -7,7 +7,7 @@ Created by:
 """
 from random import random
 
-from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant
+from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes
 
 
 class BugKilla(Creature):
@@ -84,7 +84,8 @@ class Spiker(BugKilla):
         self.poison = None
 
     def do_turn(self):
-        pass
+        if not self.spikes:
+            self.create_organs()
 
     @classmethod
     def destroyed(cls):
@@ -93,6 +94,10 @@ class Spiker(BugKilla):
     @classmethod
     def instance_count(cls):
         return Spiker.__instance_count
+
+    def create_organs(self):
+        if not self.spikes and self.strength() > Spikes.CREATION_COST:
+            self.spikes = Spikes(self)
 
 
 class BugKillaPropagator(Propagator):
