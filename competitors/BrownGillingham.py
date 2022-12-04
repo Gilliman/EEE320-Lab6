@@ -5,6 +5,7 @@ Created by:
     OCdt Brown, and
     OCdt Gillingham
 """
+from random import random
 
 from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant
 
@@ -53,9 +54,9 @@ class BugKilla(Creature):
             for d in Direction:
                 nursery = self.type_sensor.sense(d)
                 # if the population of our bug is greater than less_reproduction save energy IOT attack more
-                if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
-                    self.womb.give_birth(self.strength()/2, d)
-                elif nursery == Soil or nursery == Plant:
+                # if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
+                #     self.womb.give_birth(self.strength()/2, d)
+                if nursery == Soil or nursery == Plant:
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
@@ -67,12 +68,38 @@ class BugKilla(Creature):
                 return True
         return False
 
+
 class MiniBugKilla(BugKilla):
 
     def __init__(self):
         super().__init__()
 
-class BugKillaPropagator(Propagator):
 
+class Spiker(Creature):
+    __instance_count = 0
+
+    def __init__(self):
+        super().__init__()
+        Spiker.__instance_count += 1
+        self.spikes = None
+        self.poison = None
+
+    def do_turn(self):
+        pass
+
+    @classmethod
+    def destroyed(cls):
+        Spiker.__instance_count -= 1
+
+    @classmethod
+    def instance_count(cls):
+        return Spiker.__instance_count
+
+
+class BugKillaPropagator(Propagator):
     def make_child(self):
-        return MiniBugKilla()
+        randomNum = random()
+        if randomNum <= 0.125:
+            return Spiker()
+        else:
+            return MiniBugKilla()
