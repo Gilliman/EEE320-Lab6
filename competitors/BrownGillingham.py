@@ -22,6 +22,8 @@ class BugKilla(Creature):
         self.type_sensor = None
         self.womb = None
         self.spikes = None
+        self.poison = None
+        self.energy_sensor = None
 
     def do_turn(self):
         if not (self.cilia and self.type_sensor and self.womb):
