@@ -126,6 +126,7 @@ class BugAttacker(BugKilla):
 
 class BugKillaPropagator(Propagator):
     previous_counts = [1]*500
+    
     def make_child(self):
         instance_count = BugKilla.instance_count()
         randomNum = random()
