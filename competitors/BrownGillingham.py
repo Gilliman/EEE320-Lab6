@@ -133,7 +133,7 @@ class BugKillaPropagator(Propagator):
         spikerPercent = 0.0625
         BugKillaPropagator.previous_counts.append(instance_count)
         count500 = BugKillaPropagator.previous_counts.pop(0)
-        if instance_count >= count500:
+        if instance_count >= count500-50 or instance_count > 400:
             if instance_count < 100:
                 return MiniBugKilla()
             elif instance_count < 200:
@@ -149,7 +149,4 @@ class BugKillaPropagator(Propagator):
                 else:
                     return MiniBugKilla()
         else:
-            if randomNum <= attackerPercent:
-                return BugAttacker()
-            else:
-                return MiniBugKilla()
+            return MiniBugKilla()
