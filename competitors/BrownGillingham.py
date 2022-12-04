@@ -72,11 +72,8 @@ class MiniBugKilla(BugKilla):
 
 
 class Spiker(BugKilla):
-    __instance_count = 0
-
     def __init__(self):
         super().__init__()
-        Spiker.__instance_count += 1
         self.spikes = None
         self.womb = None
 
@@ -85,14 +82,6 @@ class Spiker(BugKilla):
             self.create_organs()
         else:
             self.reproduce_if_able()
-
-    @classmethod
-    def destroyed(cls):
-        Spiker.__instance_count -= 1
-
-    @classmethod
-    def instance_count(cls):
-        return Spiker.__instance_count
 
     def create_organs(self):
         if not self.spikes and self.strength() > Spikes.CREATION_COST:
