@@ -75,10 +75,9 @@ class Spiker(BugKilla):
     def __init__(self):
         super().__init__()
         self.spikes = None
-        self.womb = None
 
     def do_turn(self):
-        if not (self.spikes and self.womb):
+        if not (self.spikes and self.womb and self.type_sensor):
             self.create_organs()
         else:
             self.reproduce_if_able()
@@ -86,8 +85,10 @@ class Spiker(BugKilla):
     def create_organs(self):
         if not self.spikes and self.strength() > Spikes.CREATION_COST:
             self.spikes = Spikes(self)
-        # if not self.womb and self.strength() > Propagator.CREATION_COST:
-        #     self.womb = BugKillaPropagator(self)
+        if not self.womb and self.strength() > Propagator.CREATION_COST:
+            self.womb = BugKillaPropagator(self)
+        if not self.type_sensor and self.strength() > CreatureTypeSensor.CREATION_COST:
+            self.type_sensor = CreatureTypeSensor(self)
 
 
 class BugKillaPropagator(Propagator):
