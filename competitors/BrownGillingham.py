@@ -27,9 +27,7 @@ class BugKilla(Creature):
             self.organify()
         else:
             self.reproduce_if_able()
-            did_attack = self.find_victim()
-            if not did_attack:
-                self.cilia.move_in_direction(Direction.random())
+            self.move()
 
     @classmethod
     def destroyed(cls):
@@ -59,13 +57,12 @@ class BugKilla(Creature):
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
-    def find_victim(self):
+    def move(self):
         for d in Direction:
-            victim = self.type_sensor.sense(d)
-            if victim != Soil and victim != BugKilla and victim != MiniBugKilla:
+            block = self.type_sensor.sense(d)
+            if block == Plant:
                 self.cilia.move_in_direction(d)
-                return True
-        return False
+        self.cilia.move_in_direction(Direction.random())
 
 
 class MiniBugKilla(BugKilla):
