@@ -112,9 +112,16 @@ class BugAttacker(BugKilla):
             self.energy_sensor = EnergySensor(self)
 
     def find_someone_to_attack(self):
-        did_attack = False
         safe_dir = Direction.N
-        return did_attack, safe_dir
+        for d in Direction:
+            victim = self.energy_sensor.sense(d)
+            current_strength = self.strength()
+            if current_strength*0.75 > victim > 0:
+                self.cilia.move_in_direction(d)
+                return True, d
+            elif victim == 0:
+                safe_dir = d
+        return False, safe_dir
 
 
 class BugKillaPropagator(Propagator):
