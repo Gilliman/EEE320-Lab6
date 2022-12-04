@@ -95,9 +95,20 @@ class Spiker(BugKilla):
 
 class BugAttacker(BugKilla):
     def __init__(self):
-        supper().__init__()
+        super().__init__()
 
     def do_turn(self):
+        if not (self.cilia and self.energy_sensor):
+            self.create_organs()
+        else:
+            (did_attack, safe_dir) = self.find_someone_to_attack()
+            if not did_attack:
+                self.cilia.move_in_direction(safe_dir)
+
+    def create_organs(self):
+        pass
+
+    def find_someone_to_attack(self):
         pass
 
 
