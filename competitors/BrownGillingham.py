@@ -7,7 +7,7 @@ Created by:
 """
 from random import random
 
-from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes, EnergySensor
+from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes, EnergySensor, PoisonGland
 
 
 class BugKilla(Creature):
@@ -75,9 +75,6 @@ class MiniBugKilla(BugKilla):
 
 
 class Spiker(BugKilla):
-    def __init__(self):
-        super().__init__()
-
     def do_turn(self):
         if not (self.spikes and self.womb and self.type_sensor):
             self.create_organs()
@@ -94,16 +91,18 @@ class Spiker(BugKilla):
 
 
 class BugAttacker(BugKilla):
-    def __init__(self):
-        super().__init__()
-
     def do_turn(self):
         if not (self.cilia and self.energy_sensor):
             self.create_organs()
+        elif self.poison:
+            self.poison.add_poison(self.strength())
+            self.poison.drop_poison(Direction.random(), self.poison.current_volume())
         else:
             (did_attack, safe_dir) = self.find_someone_to_attack()
             if not did_attack:
                 self.cilia.move_in_direction(safe_dir)
+            elif safe_dir:
+                self.create_posion()
 
     def create_organs(self):
         if not self.cilia and self.strength() > Cilia.CREATION_COST:
@@ -111,8 +110,12 @@ class BugAttacker(BugKilla):
         if not self.energy_sensor and self.strength() > EnergySensor.CREATION_COST:
             self.energy_sensor = EnergySensor(self)
 
+    def create_posion(self):
+        if not self.poison and self.strength() > PoisonGland.CREATION_COST:
+            self.poison = PoisonGland(self)
+
     def find_someone_to_attack(self):
-        safe_dir = Direction.N
+        safe_dir = None
         for d in Direction:
             victim = self.energy_sensor.sense(d)
             current_strength = self.strength()
