@@ -126,13 +126,19 @@ class BugAttacker(BugKilla):
 
 class BugKillaPropagator(Propagator):
     def make_child(self):
+        instance_count = BugKilla.instance_count()
         randomNum = random()
-        # 1/16 chance of creating a Spiker
-        if randomNum <= 0.0625:
-            return Spiker()
-        # 2/10 chance of creating an Attacker
-        elif randomNum <= 0.2625:
-            return BugAttacker()
-        # 67/80 chance of creating a MiniBugKila
-        else:
+        if instance_count < 100:
             return MiniBugKilla()
+        elif instance_count < 200:
+            if randomNum <= 0.2:
+                return BugAttacker()
+            else:
+                return MiniBugKilla()
+        else:
+            if randomNum <= 0.2:
+                return BugAttacker()
+            elif randomNum <= 0.2625:
+                return Spiker()
+            else:
+                return MiniBugKilla()
