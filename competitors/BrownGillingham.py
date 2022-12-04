@@ -7,11 +7,10 @@ Created by:
 """
 from random import random
 
-from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes
+from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes, PoisonGland
 
 
 class BugKilla(Creature):
-
     __instance_count = 0
     __less_reproduction = 350
 
@@ -56,7 +55,7 @@ class BugKilla(Creature):
                 # if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
                 #     self.womb.give_birth(self.strength()/2, d)
                 if nursery == Soil or nursery == Plant:
-                    self.womb.give_birth(self.strength()/2, d)
+                    self.womb.give_birth(self.strength() / 2, d)
                     break
 
     def find_victim(self):
@@ -82,10 +81,26 @@ class Spiker(BugKilla):
         Spiker.__instance_count += 1
         self.spikes = None
         self.poison = None
+        self.type_sensor = None
 
     def do_turn(self):
-        if not self.spikes:
+        if not (self.spikes and self.type_sensor):
             self.create_organs()
+        elif not self.poison:
+            friendly = self.check_friendly()
+            self.create_poison(friendly)
+        else:
+            poison_volume = self.poison.current_volume()
+            if poison_volume < 1000:
+                # adds poison to the reservoir
+                add = self.strength() / 2
+                top = 1000 - poison_volume
+                add = min(add, top)
+                self.poison.add_poison(add)
+            else:
+                friendly = self.check_friendly()
+                did_attack = self.poison_attack(friendly)
+                # if not did_attack: reproduce
 
     @classmethod
     def destroyed(cls):
@@ -98,6 +113,28 @@ class Spiker(BugKilla):
     def create_organs(self):
         if not self.spikes and self.strength() > Spikes.CREATION_COST:
             self.spikes = Spikes(self)
+        # if not self.poison and self.strength() > PoisonGland.CREATION_COST:
+        #     self.poison = PoisonGland(self)
+        if not self.type_sensor and self.strength() > CreatureTypeSensor.CREATION_COST:
+            self.type_sensor = CreatureTypeSensor(self)
+
+    def create_poison(self, friendly):
+        ran_num = random()
+        if ran_num < 0.125 and not friendly:
+            self.poison = PoisonGland(self)
+
+    def check_friendly(self):
+        for d in Direction:
+            block = self.type_sensor.sense(d)
+            if block == MiniBugKilla or block == Spiker:
+                return True
+        return False
+
+    def poison_attack(self, friendly):
+        if not friendly:
+            self.poison.drop_poison(Direction.N, 500)
+            return True
+        return False
 
 
 class BugKillaPropagator(Propagator):
