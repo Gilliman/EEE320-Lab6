@@ -14,6 +14,7 @@ class BugKilla(Creature):
 
     __instance_count = 0
     __less_reproduction = 350
+    __bad_guys = []
 
     def __init__(self):
         super().__init__()
@@ -92,23 +93,25 @@ class Spiker(BugKilla):
 
 class BugAttacker(BugKilla):
     def do_turn(self):
-        if not (self.cilia and self.energy_sensor):
+        if not (self.cilia and self.type_sensor):
             self.create_organs()
         elif self.poison:
             self.poison.add_poison(self.strength())
             self.poison.drop_poison(Direction.random(), self.poison.current_volume())
         else:
             (did_attack, safe_dir) = self.find_someone_to_attack()
-            if not did_attack:
+            if not did_attack and safe_dir:
                 self.cilia.move_in_direction(safe_dir)
-            elif safe_dir:
-                self.create_posion()
+            if did_attack and not safe_dir:
+                randomNum = random()
+                if randomNum <= 0.1:
+                    self.create_posion()
 
     def create_organs(self):
         if not self.cilia and self.strength() > Cilia.CREATION_COST:
             self.cilia = Cilia(self)
-        if not self.energy_sensor and self.strength() > EnergySensor.CREATION_COST:
-            self.energy_sensor = EnergySensor(self)
+        if not self.type_sensor and self.strength() > CreatureTypeSensor.CREATION_COST:
+            self.type_sensor = CreatureTypeSensor(self)
 
     def create_posion(self):
         if not self.poison and self.strength() > PoisonGland.CREATION_COST:
@@ -117,12 +120,14 @@ class BugAttacker(BugKilla):
     def find_someone_to_attack(self):
         safe_dir = None
         for d in Direction:
-            victim = self.energy_sensor.sense(d)
-            current_strength = self.strength()
-            if current_strength*0.75 > victim > 0:
+            victim = self.type_sensor.sense(d)
+            if victim != Soil and victim != BugKilla and victim != MiniBugKilla and victim != Spiker \
+                    and victim != BugAttacker:
                 self.cilia.move_in_direction(d)
-                return True, d
-            elif victim == 0:
+                if victim == Plant:
+                    return False, safe_dir
+                return True, safe_dir
+            elif victim == Soil:
                 safe_dir = d
         return False, safe_dir
 
