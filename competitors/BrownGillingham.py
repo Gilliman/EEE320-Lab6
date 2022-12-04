@@ -7,7 +7,7 @@ Created by:
 """
 from random import random
 
-from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes
+from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes, EnergySensor
 
 
 class BugKilla(Creature):
@@ -106,10 +106,15 @@ class BugAttacker(BugKilla):
                 self.cilia.move_in_direction(safe_dir)
 
     def create_organs(self):
-        pass
+        if not self.cilia and self.strength() > Cilia.CREATION_COST:
+            self.cilia = Cilia(self)
+        if not self.energy_sensor and self.strength() > EnergySensor.CREATION_COST:
+            self.energy_sensor = EnergySensor(self)
 
     def find_someone_to_attack(self):
-        pass
+        did_attack = False
+        safe_dir = Direction.N
+        return did_attack, safe_dir
 
 
 class BugKillaPropagator(Propagator):
