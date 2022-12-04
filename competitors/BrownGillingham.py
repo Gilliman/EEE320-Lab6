@@ -55,7 +55,7 @@ class BugKilla(Creature):
                 # if the population of our bug is greater than less_reproduction save energy IOT attack more
                 # if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
                 #     self.womb.give_birth(self.strength()/2, d)
-                if nursery == Soil or nursery == Plant:
+                if nursery == Plant:
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
@@ -81,11 +81,13 @@ class Spiker(BugKilla):
         super().__init__()
         Spiker.__instance_count += 1
         self.spikes = None
-        self.poison = None
+        self.womb = None
 
     def do_turn(self):
-        if not self.spikes:
+        if not (self.spikes and self.womb):
             self.create_organs()
+        else:
+            self.reproduce_if_able()
 
     @classmethod
     def destroyed(cls):
@@ -98,12 +100,14 @@ class Spiker(BugKilla):
     def create_organs(self):
         if not self.spikes and self.strength() > Spikes.CREATION_COST:
             self.spikes = Spikes(self)
+        # if not self.womb and self.strength() > Propagator.CREATION_COST:
+        #     self.womb = BugKillaPropagator(self)
 
 
 class BugKillaPropagator(Propagator):
     def make_child(self):
         randomNum = random()
-        if randomNum <= 0.125:
+        if randomNum <= 0.0625:
             return Spiker()
         else:
             return MiniBugKilla()
