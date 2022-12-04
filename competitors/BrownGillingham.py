@@ -21,6 +21,7 @@ class BugKilla(Creature):
         self.cilia = None
         self.type_sensor = None
         self.womb = None
+        self.spikes = None
 
     def do_turn(self):
         if not (self.cilia and self.type_sensor and self.womb):
@@ -74,7 +75,6 @@ class MiniBugKilla(BugKilla):
 class Spiker(BugKilla):
     def __init__(self):
         super().__init__()
-        self.spikes = None
 
     def do_turn(self):
         if not (self.spikes and self.womb and self.type_sensor):
@@ -89,6 +89,14 @@ class Spiker(BugKilla):
             self.womb = BugKillaPropagator(self)
         if not self.type_sensor and self.strength() > CreatureTypeSensor.CREATION_COST:
             self.type_sensor = CreatureTypeSensor(self)
+
+
+class BugAttacker(BugKilla):
+    def __init__(self):
+        supper().__init__()
+
+    def do_turn(self):
+        pass
 
 
 class BugKillaPropagator(Propagator):
