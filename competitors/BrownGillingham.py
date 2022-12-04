@@ -22,7 +22,6 @@ class BugKilla(Creature):
         self.type_sensor = None
         self.womb = None
 
-
     def do_turn(self):
         if not (self.cilia and self.type_sensor and self.womb):
             self.organify()
@@ -75,7 +74,7 @@ class MiniBugKilla(BugKilla):
         super().__init__()
 
 
-class Spiker(Creature):
+class Spiker(BugKilla):
     __instance_count = 0
 
     def __init__(self):
