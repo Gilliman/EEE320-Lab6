@@ -53,12 +53,10 @@ class BugKilla(Creature):
         if self.strength() >= 0.9 * Creature.MAX_STRENGTH:
             for d in Direction:
                 nursery = self.type_sensor.sense(d)
-                # if the population of our bug is greater than less_reproduction save energy IOT attack more
-                # if BugKilla.__instance_count > BugKilla.__less_reproduction and nursery == Plant:
-                #     self.womb.give_birth(self.strength()/2, d)
                 if nursery == Plant:
                     self.womb.give_birth(self.strength()/2, d)
-                    break
+                    return True
+        return False
 
     def move(self):
         for d in Direction:
@@ -126,7 +124,7 @@ class BugAttacker(BugKilla):
 
 class BugKillaPropagator(Propagator):
     previous_counts = [1]*500
-    
+
     def make_child(self):
         instance_count = BugKilla.instance_count()
         randomNum = random()
