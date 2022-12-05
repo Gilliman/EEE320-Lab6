@@ -7,7 +7,7 @@ Created by:
 """
 from random import random
 
-from shared import Creature, Cilia, CreatureTypeSensor, Propagator, Direction, Soil, Plant, Spikes, EnergySensor
+from shared import Creature, Cilia, Cloaking, CreatureTypeSensor, Propagator, Direction, Plant, Soil, Spikes, EnergySensor
 
 
 class BugKilla(Creature):
@@ -29,8 +29,10 @@ class BugKilla(Creature):
         if not (self.cilia and self.type_sensor and self.womb):
             self.organify()
         else:
+            # if the bug cloaked (true) because it is near others,
+            #   dont reproduce and get away and uncloak
+            self.moving()
             self.reproduce_if_able()
-            self.move()
 
     @classmethod
     def destroyed(cls):
@@ -47,6 +49,9 @@ class BugKilla(Creature):
             self.type_sensor = CreatureTypeSensor(self)
         if not self.womb and self.strength() > Propagator.CREATION_COST:
             self.womb = BugKillaPropagator(self)
+        if not self.energy_sensor and self.strength() > EnergySensor.CREATION_COST:
+            self.energy_sensor = EnergySensor(self)
+
 
     # copied form Hunter as I think this makes a lot of sense to do it this way but idk bro
     def reproduce_if_able(self):
@@ -60,12 +65,19 @@ class BugKilla(Creature):
                     self.womb.give_birth(self.strength()/2, d)
                     break
 
-    def move(self):
+    def moving(self):
         for d in Direction:
             block = self.type_sensor.sense(d)
-            if block == Plant:
-                self.cilia.move_in_direction(d)
+            enemy = self.energy_sensor.sense(d)
+            if enemy > self.strength():
+                self.f_cloak()
+                self.cilia.move_in_direction(self.Direction.opposite())
+                return True
+            elif block == Plant:
+                self.f_uncloak()
+                return False, d
         self.cilia.move_in_direction(Direction.random())
+        self.f_uncloak()
 
 
 class MiniBugKilla(BugKilla):
